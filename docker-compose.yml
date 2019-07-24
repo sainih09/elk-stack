@@ -1,0 +1,103 @@
+
+version: '3'
+
+services:
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: changeme
+    # network_mode: host
+    networks:
+      - elk
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:6.5.4
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    ports:
+      - "5000:5000"
+      - "9600:9600"
+    container_name: logstash
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    # network_mode: host
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    # build: 
+    #   context: ./kibana/
+    image: hariomsaini/kibana:latest
+    # image: kib
+    container_name: kibana
+    volumes:
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    # network_mode: host
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    build: ./filebeat/
+    container_name: filebeat
+    networks:
+      - elk
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro  
+    depends_on:
+      - elasticsearch 
+    # network_mode: host
+
+  metricbeat:
+    build: ./metricbeat/
+    container_name: metricbeat
+    networks: 
+      - elk
+    depends_on:
+      - elasticsearch 
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro
+      - /:/hostfs:ro
+  elastalert:
+    # image: bitsensor/elastalert:latest
+    # build:
+    #   context: ./elastalert/
+    # #   dockerfile: Dockerfile
+    image: hariomsaini/elastalert
+    container_name: elastalert
+    # network_mode: host
+    ports:
+      - "3030:3030"
+      - "3333:3333"
+    networks:
+      - elk
+    volumes:
+      # - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      # - /var/run/docker.sock:/var/run/docker.sock:ro  
+      - ./elastalert/config/elastalert.yaml:/opt/elastalert/config.yaml
+      - ./elastalert/config/elastalert-test.yaml:/opt/elastalert/config-test.yaml
+      - ./elastalert/config/config.json:/opt/elastalert-server/config/config.json
+      - ./elastalert/rules:/opt/elastalert/rules
+      - ./elastalert/rule_templates:/opt/elastalert/rule_templates
+    depends_on:
+      - elasticsearch 
+networks:
+  elk:
+    driver: bridge

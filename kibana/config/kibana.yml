@@ -1,0 +1,88 @@
+---
+## Default Kibana configuration from kibana-docker.
+## https://github.com/elastic/kibana-docker/blob/master/.tedi/template/kibana.yml.j2
+#
+server.name: kibana
+server.host: "0"
+#for newer versions, uncomment the next and comment prior to that
+# elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+elasticsearch.url: http://elasticsearch:9200
+xpack.monitoring.ui.container.elasticsearch.enabled: true
+
+## X-Pack security credentials
+#
+elasticsearch.username: elastic
+elasticsearch.password: changeme
+
+elastalert-kibana-plugin.serverHost: elastalert
+elastalert-kibana-plugin.serverPort: 3030
+
+# sentinl:
+#   es:
+#     host: 'elasticsearch'
+#     port: 9200
+#   settings:
+#     email:
+#       active: true
+#       host: "smtp.gmail.com"
+#       user: "hariomsaini0011@gmail.com"
+#       password: "SainiHariom3527"
+#       port: 465
+#       domain: "gmail.com"
+#       ssl: false
+#       tls: false
+#       authentication: ['PLAIN', 'LOGIN', 'CRAM-MD5', 'XOAUTH2']
+#       timeout: 20000  # mail server connection timeout
+#       # cert:
+      #   key: '/full/sys/path/to/key/file'
+      #   cert: '/full/sys/path/to/cert/file'
+      #   ca: '/full/sys/path/to/ca/file'
+    # slack:
+    #   active: true
+    #   username: 'hariomsaini0011'
+    #   hook: 'https://hooks.slack.com/services/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s'
+    #   channel: '#sentinlhook'   
+# sentinl:
+#   es:
+#     host: 'elasticsearch'
+#     port: 9200
+#     # protocol: 'http'
+#     # results: 50
+#     # timefield: '@timestamp'
+#     # default_type: 'doc'
+#     # alarm_index: 'watcher_alarms'
+#     # alarm_type: 'sentinl-alarm'
+#   # settings:
+#   #   email:
+#   #     active: true
+#   #     host: 'localhost'
+#       # user: 'admin'
+#       # password: 'password'
+#       # port: 25
+#       # domain: 'beast.com'
+#       # ssl: false
+#       # tls: false
+#       # authentication: ['PLAIN', 'LOGIN', 'CRAM-MD5', 'XOAUTH2']
+#       # timeout: 10000  # mail server connection timeout
+#       # cert:
+#       #   key: '/full/sys/path/to/key/file'
+#       #   cert: '/full/sys/path/to/cert/file'
+#       #   ca: '/full/sys/path/to/ca/file'
+#     slack:
+#       active: true
+#       token: 'otrtElWulOBYzBUEHUV51T3O'
+#     webhook:
+#       active: true
+#       host: 'elasticsearch'
+#       port: 9200
+#       # use_https: false
+#       # path: ':/{{payload.watcher_id}}'
+#       # body: '{{payload.watcher_id}}{payload.hits.total}}'
+#       # method: POST
+#     report:
+#       # active: true
+#       # engine: horseman # horseman, puppeteer
+#       # puppeteer:
+#       #   browser_path: /path/to/chrome
+#       # horseman:
+#       #   browser_path: /path/to/phantomjs
